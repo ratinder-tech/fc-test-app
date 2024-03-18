@@ -46,6 +46,56 @@ app.get("/api/products/count", async (_req, res) => {
   res.status(200).send(countData);
 });
 
+
+app.get("/api/products", async (_req, res) => {
+  try {
+    const session = res.locals.shopify.session;
+    const client = new shopify.api.clients.Graphql({ session });
+    const queryString = `{
+      products(first: 30) {
+        edges {
+          node {
+            id
+            title
+            metafields(first: 10) {
+            edges {
+              node {
+                key
+                value
+              }
+            }
+          }        
+            variants(first: 10) {
+              edges {
+                node {
+                  id
+                  title
+                  price
+                  metafields(first: 10) {
+                    edges {
+                      node {
+                        key
+                        value
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`;
+
+    const data = await client.query({
+      data: queryString,
+    });
+    res.status(200).send(data);
+  } catch (error) {
+    console.log("products==", error);
+  }
+});
+
 app.get("/api/products/create", async (_req, res) => {
   let status = 200;
   let error = null;

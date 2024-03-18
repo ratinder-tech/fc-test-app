@@ -18,7 +18,7 @@ import { ProductsCard } from "../components";
 
 export default function HomePage() {
   const productCount = useAppQuery({
-        url: "/api/products/count",
+        url: "/api/products",
         reactQueryOptions: {
             onSuccess: () => {
                 // setIsLoading(false);

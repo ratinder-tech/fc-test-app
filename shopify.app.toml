@@ -3,22 +3,23 @@
 client_id = "f9c27e3e9a9f6b33b4f1a31fc764c385"
 name = "fc-test-app"
 handle = "fc-test-app"
-application_url = "https://integrity-anonymous-effect-attractive.trycloudflare.com"
+application_url = "https://russian-hampshire-respective-ventures.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
 dev_store_url = "test-development-fc-app.myshopify.com"
+include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = ""
+scopes = "read_products"
 
 [auth]
 redirect_urls = [
-  "https://integrity-anonymous-effect-attractive.trycloudflare.com/auth/callback",
-  "https://integrity-anonymous-effect-attractive.trycloudflare.com/auth/shopify/callback",
-  "https://integrity-anonymous-effect-attractive.trycloudflare.com/api/auth/callback"
+  "https://russian-hampshire-respective-ventures.trycloudflare.com/auth/callback",
+  "https://russian-hampshire-respective-ventures.trycloudflare.com/auth/shopify/callback",
+  "https://russian-hampshire-respective-ventures.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
