@@ -20,6 +20,16 @@ const STATIC_PATH =
 
 const app = express();
 
+console.log("hello world")
+
+app.get("/", async (_req, res) => {
+  try {
+    res.status(200).send("hello world");
+  } catch (error) {
+    console.log("carrier-delete=", error);
+  }
+});
+
 // Set up Shopify authentication and webhook handling
 app.get(shopify.config.auth.path, shopify.auth.begin());
 app.get(
