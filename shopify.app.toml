@@ -3,7 +3,7 @@
 client_id = "f9c27e3e9a9f6b33b4f1a31fc764c385"
 name = "fc-test-app"
 handle = "fc-test-app"
-application_url = "https://russian-hampshire-respective-ventures.trycloudflare.com"
+application_url = "https://connect-revolution-fairy-mathematics.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_products"
 
 [auth]
 redirect_urls = [
-  "https://russian-hampshire-respective-ventures.trycloudflare.com/auth/callback",
-  "https://russian-hampshire-respective-ventures.trycloudflare.com/auth/shopify/callback",
-  "https://russian-hampshire-respective-ventures.trycloudflare.com/api/auth/callback"
+  "https://connect-revolution-fairy-mathematics.trycloudflare.com/auth/callback",
+  "https://connect-revolution-fairy-mathematics.trycloudflare.com/auth/shopify/callback",
+  "https://connect-revolution-fairy-mathematics.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
