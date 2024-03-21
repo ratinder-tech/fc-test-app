@@ -19,13 +19,13 @@ const billingConfig = {
 
 const shopify = shopifyApp({
   api: {
-    hostName: process.env.HOST,
+    hostName: "https://fc-app.vuwork.com/",
     apiVersion: LATEST_API_VERSION,
     restResources,
     billing: undefined, // or replace with billingConfig above to enable example billing
-    apiKey: process.env.SHOPIFY_API_KEY,
-    apiSecretKey: process.env.SHOPIFY_API_SECRET,
-    scopes: process.env.SCOPES,
+    apiKey: "f9c27e3e9a9f6b33b4f1a31fc764c385",
+    apiSecretKey: "8abf2a68412870e236849a25ca8f1036",
+    scopes: "read_products",
   },
   auth: {
     path: "/api/auth",
