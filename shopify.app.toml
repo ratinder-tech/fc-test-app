@@ -3,7 +3,7 @@
 client_id = "f9c27e3e9a9f6b33b4f1a31fc764c385"
 name = "fc-test-app"
 handle = "fc-test-app"
-application_url = "https://connect-revolution-fairy-mathematics.trycloudflare.com"
+application_url = "https://piano-tops-developers-performs.trycloudflare.com"
 embedded = true
 
 [build]
@@ -13,13 +13,13 @@ include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_products"
+scopes = "read_all_orders,read_checkouts,read_orders,read_products,read_shipping,unauthenticated_read_checkouts,unauthenticated_write_checkouts,write_checkouts,write_orders,write_products,write_shipping"
 
 [auth]
 redirect_urls = [
-  "https://connect-revolution-fairy-mathematics.trycloudflare.com/auth/callback",
-  "https://connect-revolution-fairy-mathematics.trycloudflare.com/auth/shopify/callback",
-  "https://connect-revolution-fairy-mathematics.trycloudflare.com/api/auth/callback"
+  "https://piano-tops-developers-performs.trycloudflare.com/auth/callback",
+  "https://piano-tops-developers-performs.trycloudflare.com/auth/shopify/callback",
+  "https://piano-tops-developers-performs.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
