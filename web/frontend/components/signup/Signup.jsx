@@ -3,6 +3,7 @@ import axios from 'axios';
 import "../login/style.css";
 import { useState } from "react";
 import { Loader } from "../loader";
+import { ErrorModal } from "../errorModal";
 
 export function Signup(props) {
     const [firstName, setFirstName] = useState("");
@@ -12,10 +13,45 @@ export function Signup(props) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [openErrorModal, setOpenErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const navigate = useNavigate();
 
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(email);
+        return isValid;
+      }
+    function validations() {
+      if (
+        !email ||
+         
+        !password ||
+        !firstName ||
+        !lastName ||
+        !confirmPassword
+      ) {
+        setErrorMessage("Please fill all the required fields");
+        setOpenErrorModal(true);
+        return false;
+      }
+      if(!isValidEmail(email)){
+        setErrorMessage("Please enter a valid email");
+        setOpenErrorModal(true);
+        return false;
+      }
+      if (password !== confirmPassword) {
+        setErrorMessage("Passwords do not match");
+        setOpenErrorModal(true);
+        return false;
+      }
+      return true;
+    }
+
     const signup = () => {
+        const isValid = validations();
+        if(isValid){
         setIsLoading(true);
         const payload = {
             "firstName": firstName,
@@ -41,8 +77,13 @@ export function Signup(props) {
             setIsLoading(false);
         }).catch(error => {
             setIsLoading(false);
+            setErrorMessage("The signup details are incorrect. Please try again.");
+            setOpenErrorModal(true);
+
             console.log(error);
-        })
+        })}else{
+            
+        }
 
     }
     return (
@@ -51,6 +92,11 @@ export function Signup(props) {
                 isLoading &&
                 <Loader />
             }
+             <ErrorModal
+        showModal={openErrorModal}
+        message={errorMessage}
+        onConfirm={() => setOpenErrorModal(false)}
+      />
             <div className="logo-image">
                 <img src="https://portal-staging.fastcourier.com.au/assets/media/logos/fast-courier-dark.png" />
             </div>

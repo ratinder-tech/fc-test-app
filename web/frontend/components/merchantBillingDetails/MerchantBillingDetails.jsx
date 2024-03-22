@@ -41,6 +41,105 @@ export function MerchantBillingDetails(props) {
   const [selectedCourierPref, setSelectedCourierPref] = useState([]);
   const [categoryOfGoods, setCategoryOfGoods] = useState([]);
   const [selectedGoods, setSelectedGoods] = useState(null);
+  const [errors, setErrors] = useState({
+    billingFirstNameError: "",
+    billingLastNameError: "",
+    billingCompanyNameError: "",
+    billingPhoneError: "",
+    billingEmailError: "",
+    billingAbnError: "",
+    billingAddress1Error: "",
+    billingSuburbError: "",
+    bookingPreferenceError: "",
+    fallbackAmountError: "",
+    courierPreferencesError: "",
+    categoryOfGoodsError: "",
+  });
+
+ async function validations() {
+    let count_of_errros=0
+    let _errors = {
+      billingFirstNameError: null,
+      billingLastNameError: null,
+      billingCompanyNameError: null,
+      billingPhoneError: null,
+      billingEmailError: null,
+      billingAbnError: null,
+      billingAddress1Error: null,
+      billingSuburbError: null,
+      bookingPreferenceError: null,
+      fallbackAmountError: null,
+      courierPreferencesError: null,
+      categoryOfGoodsError: null,
+    }
+    if (!billingFirstName) {
+      count_of_errros++
+      _errors.billingFirstNameError = "Please enter first name.";
+      // setErrorMessage("Please enter first name.");
+     
+    }
+    if (!billingLastName) {
+     
+      count_of_errros++
+      _errors.billingLastNameError = "Please enter last name.";
+    
+    }
+    if (!billingCompanyName) {
+  
+      count_of_errros++
+      _errors.billingCompanyNameError = "Please enter company name.";
+    }
+    if (!billingPhone) {
+   
+      count_of_errros++
+      _errors.billingPhoneError = "Please enter phone.";
+    }
+    if (!billingEmail) {
+     
+      count_of_errros++
+      _errors.billingEmailError = "Please enter email.";
+    }
+    if (!billingAddress1) {
+     
+      count_of_errros++
+      _errors.billingAddress1Error = "Please enter address1.";
+    }
+    if (!billingSuburb) {
+                   
+      count_of_errros++
+      _errors.billingSuburbError = "Please enter suburb.";                           
+
+    }
+    if(!bookingPreference){
+
+      count_of_errros++
+      _errors.bookingPreferenceError = "Please select booking preference.";
+    }
+    if(!fallbackAmount){
+      count_of_errros++
+      _errors.fallbackAmountError = "Please enter fallback amount.";
+    }
+    if(selectedCourierPref?.length == 0 || selectedCourierPref === null){
+      count_of_errros++
+      _errors.courierPreferencesError = "Please select courier preferences.";
+    }
+
+    if(!billingAbn){
+      count_of_errros++
+      _errors.billingAbnError = "Please enter ABN.";
+    }
+
+ 
+    if (selectedGoods?.length == 0 || selectedGoods === null) {
+      count_of_errros++
+      _errors.categoryOfGoodsError = "Please select category of goods.";
+    }
+    setErrors(_errors);
+    return count_of_errros;
+  }
+
+  // console.log(errors,"errods")
+  console.log(selectedCourierPref,"selectedCourierPref")
 
   const fetch = useAuthenticatedFetch();
 
@@ -74,28 +173,30 @@ export function MerchantBillingDetails(props) {
         headers: headers,
       })
       .then((response) => {
-        // getMerchant();
-        setDefaultSuburb({
-          value:
-            response.data.data.billing_suburb +
-            ", " +
-            response.data.data.billing_postcode +
-            " (" +
-            response.data.data.billing_state +
-            ")",
-          label:
-            response.data.data.billing_suburb +
-            ", " +
-            response.data.data.billing_postcode +
-            "(" +
-            response.data.data.billing_state +
-            ")",
-        });
+        if (response.data.data.billing_suburb) {
+          setDefaultSuburb({
+            value:
+              response.data.data.billing_suburb +
+              ", " +
+              response.data.data.billing_postcode +
+              " (" +
+              response.data.data.billing_state +
+              ")",
+            label:
+              response.data.data.billing_suburb +
+              ", " +
+              response.data.data.billing_postcode +
+              "(" +
+              response.data.data.billing_state +
+              ")",
+          });
+        }
+
         // Set default selected goods
         let selected_value = JSON.parse(response.data.data.categories_of_goods);
 
         setSelectedGoods(
-          categories.filter((item) => selected_value.includes(item.value))
+          categories.filter((item) => selected_value?.includes(item.value))
         );
         setMerchantDetails(response.data.data);
         props.setMerchantDetails(response.data.data);
@@ -165,7 +266,6 @@ export function MerchantBillingDetails(props) {
       },
     });
     const data = await response.json();
-    console.log("carrier", data.data);
     setCarrierServices(data.data);
   };
 
@@ -173,7 +273,6 @@ export function MerchantBillingDetails(props) {
     const values = selectedGoods?.map((element, i) => {
       return categoryOfGoods[element];
     });
-    console.log("values=", values);
     return values;
   }
 
@@ -196,11 +295,11 @@ export function MerchantBillingDetails(props) {
     setConditionalValue(merchant.conditional_price);
     setInsuranceAmount(merchant.insurance_amount);
     setIsDropOffTailLift(merchant.is_drop_off_tail_lift);
+    if(merchant.courier_preferences){
+      const carriers = JSON.parse(merchant.courier_preferences);
+      setSelectedCourierPref(carriers);
 
-    const carriers = JSON.parse(merchant.courier_preferences);
-
-    setSelectedCourierPref(carriers);
-
+    }
     const tailLiftWeight = localStorage.getItem("tailLiftValue");
     setTailLiftValue(tailLiftWeight);
   }
@@ -267,47 +366,10 @@ export function MerchantBillingDetails(props) {
       });
   };
 
-  const validations = () => {
-    if (billingFirstName == "") {
-      setErrorMessage("Please enter first name.");
-      return false;
-    }
-    if (billingLastName == "") {
-      setErrorMessage("Please enter last name.");
-      return false;
-    }
-    if (billingCompanyName == "") {
-      setErrorMessage("Please enter company name.");
-      return false;
-    }
-    if (billingPhone == "") {
-      setErrorMessage("Please enter phone number.");
-      return false;
-    }
-    if (billingEmail == "") {
-      setErrorMessage("Please enter email.");
-      return false;
-    }
-    if (billingAddress1 == "") {
-      setErrorMessage("Please enter address1.");
-      return false;
-    }
-    if (billingSuburb == "") {
-      setErrorMessage("Please select suburb.");
-      return false;
-    }
-    if (selectedGoods.length == 0 || selectedGoods === null) {
-      setErrorMessage("Please select atleast 1 category of goods.");
-      return false;
-    }
-    return true;
-  };
-
   const activateMerchant = async () => {
     try {
-      const isValid = validations();
-      console.log("isValid=", isValid);
-      if (isValid) {
+      const isValid =await validations();
+      if (isValid === 0) {
         setIsLoading(true);
         const accessToken = localStorage.getItem("accessToken");
         const merchantDomainId = localStorage.getItem("merchantDomainId");
@@ -369,7 +431,7 @@ export function MerchantBillingDetails(props) {
             setIsLoading(false);
           });
       } else {
-        setOpenErrorModal(true);
+        // setOpenErrorModal(true);
       }
     } catch (error) {
       console.log("error==", error);
@@ -394,7 +456,6 @@ export function MerchantBillingDetails(props) {
         }),
       });
       const data = await response.json();
-      console.log("carrier", data);
       setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
@@ -438,6 +499,9 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> First Name&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingFirstNameError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
@@ -453,6 +517,9 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Last Name&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingLastNameError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
@@ -470,6 +537,9 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Company Name&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingCompanyNameError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
@@ -485,11 +555,14 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Contact Phone Number&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingPhoneError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
               className="input-field-text1"
-              type="text"
+              type="number"
               value={billingPhone}
               placeholder="Contact Phone Number"
               onChange={(e) => setBillingPhone(e.target.value)}
@@ -502,6 +575,9 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Email&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingEmailError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
@@ -517,6 +593,9 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> ABN&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingAbnError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
@@ -534,6 +613,9 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Address 1&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingAddress1Error && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="input-field">
             <input
@@ -565,20 +647,23 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Suburb&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.billingSuburbError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
-          {defaultSuburb != null && (
-            <Select
-              options={suburbs}
-              onChange={(e) => {
-                const [, extractedCity, extractedPostcode, extractedState] =
-                  e.value.match(/^(.*), (\d+) \((.*)\)$/);
-                setBillingSuburb(extractedCity);
-                setBillingPostcode(extractedPostcode);
-                setBillingState(extractedState);
-              }}
-              defaultValue={defaultSuburb}
-            />
-          )}
+          {/* {defaultSuburb != null && ( */}
+          <Select
+            options={suburbs}
+            onChange={(e) => {
+              const [, extractedCity, extractedPostcode, extractedState] =
+                e.value.match(/^(.*), (\d+) \((.*)\)$/);
+              setBillingSuburb(extractedCity);
+              setBillingPostcode(extractedPostcode);
+              setBillingState(extractedState);
+            }}
+            defaultValue={defaultSuburb}
+          />
+          {/* )} */}
         </div>
       </div>
       <div className="shipping-config">
@@ -644,6 +729,9 @@ export function MerchantBillingDetails(props) {
           <div className="shipping-label">
             <span> Fallback Shipping Amount&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.fallbackAmountError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
           <div className="shipping-label1">
             <span>
@@ -655,7 +743,7 @@ export function MerchantBillingDetails(props) {
           <div className="input-field">
             <input
               className="input-field-text1"
-              type="text"
+              type="number"
               value={fallbackAmount}
               onChange={(e) => setFallbackAmount(e.target.value)}
             />
@@ -667,6 +755,9 @@ export function MerchantBillingDetails(props) {
         <div className="shipping-label">
           <span> Active Couriers&nbsp;</span>
           <span style={{ color: "red" }}> *</span>
+          {errors.courierPreferencesError && (
+            <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+          )}
         </div>
         <div className="courier-preference-items">
           {activeCouriers.length > 0 &&
@@ -679,7 +770,7 @@ export function MerchantBillingDetails(props) {
                     id={courier.id}
                     value={courier.id}
                     onChange={(e) => handleCourierChange(e)}
-                    checked={selectedCourierPref.includes(
+                    checked={selectedCourierPref?.includes(
                       courier.id.toString()
                     )}
                   />
@@ -694,11 +785,14 @@ export function MerchantBillingDetails(props) {
           <div className="input-lebel1">
             <span> Category of Goods Sold&nbsp;</span>
             <span style={{ color: "red" }}> *</span>
+            {errors.categoryOfGoodsError && (
+              <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
+            )}
           </div>
 
-          {categoryOfGoods.length > 0 && selectedGoods && (
+          {categoryOfGoods.length > 0 &&  (
             <Select
-              defaultValue={selectedGoods}
+              defaultValue={selectedGoods ?? []}
               isMulti
               name="colors"
               options={categoryOfGoods}

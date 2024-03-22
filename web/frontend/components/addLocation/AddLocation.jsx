@@ -248,7 +248,7 @@ export function AddLocation(props) {
     setSelectedSuburb("");
     setTailLift("0");
     setIsDefaultLocation("0");
-    setSuburbs([]);
+    // setSuburbs([]);
     setTags(null);
 
     setSelectedFreeShippingCodes([]);

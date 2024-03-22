@@ -225,7 +225,10 @@ export function PickupLocations(props) {
                         <Modal showModal={showEditModal} width="60%">
                           <AddLocation
                             setShowModal={setShowEditModal}
-                            getPickupLocations={getPickupLocations}
+                            getPickupLocations={()=>{
+                          
+                            getMerchantTags()
+                              getPickupLocations()}}
                             editLocation={pickupLocations[i]}
                             {...props}
                           />
