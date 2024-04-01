@@ -7,20 +7,22 @@ import { MongoClient, ObjectId } from "mongodb";
 import shopify from "./shopify.js";
 import PrivacyWebhookHandlers from "./privacy.js";
 import bodyParser from "body-parser";
-import sqlite3 from 'sqlite3';
+import sqlite3 from "sqlite3";
 
-
-const db = new sqlite3.Database('./database.sqlite', sqlite3.OPEN_READWRITE, (err) => {
-  if (err) {
-    console.error(err.message, "eroroorro");
+const db = new sqlite3.Database(
+  "./database.sqlite",
+  sqlite3.OPEN_READWRITE,
+  (err) => {
+    if (err) {
+      console.error(err.message, "eroroorro");
+    }
+    console.log("Connected to the database.");
   }
-  console.log('Connected to the database.');
-});
-
+);
 
 function getSession() {
   return new Promise((resolve, reject) => {
-    db.all('SELECT * FROM shopify_sessions', [], (err, rows) => {
+    db.all("SELECT * FROM shopify_sessions", [], (err, rows) => {
       if (err) {
         reject(err);
       }
@@ -52,199 +54,203 @@ const app = express();
 
 app.use(bodyParser.json());
 
-
-
 const getValueByKey = (data, key) => {
-  const item = data.find(obj => obj.key === key);
+  const item = data.find((obj) => obj.key === key);
   return item ? item.value : null;
 };
 app.post("/api/shipping-rates", async (_req, res) => {
   try {
-    const session = await getSession();
-    var items = [];
-    var totalPrice = 0;
-    var isFreeShipping = false;
-    for (const element of _req.body.rate.items) {
-      // _req.body.rate.items.map(async (element, i) => {
+    // const session = await getSession();
+    // console.log("session===", session);
+    // var items = [];
+    // var totalPrice = 0;
+    // var isFreeShipping = false;
+    // for (const element of _req.body.rate.items) {
+    //   // _req.body.rate.items.map(async (element, i) => {
 
-      const variantId = element.variant_id;
-      const productId = element.product_id;
-      // var ownerId = variantId != null ? variantId : productId;
-      // var ownerResource = variantId != null ? "variants" : "product";
-      // const productMetafields = await shopify.api.rest.Metafield.all({
-      //   session: session[1],
-      //   metafield: { "owner_id": ownerId, "owner_resource": ownerResource },
-      // });
-      const productMetafields = await shopify.api.rest.Metafield.all({
-        session: session[1],
-        metafield: { "owner_id": productId, "owner_resource": "product" },
-      });
-      console.log("element==", element)
-      const metaData = productMetafields.data;
+    //   const variantId = element.variant_id;
+    //   const productId = element.product_id;
+    //   // var ownerId = variantId != null ? variantId : productId;
+    //   // var ownerResource = variantId != null ? "variants" : "product";
+    //   // const productMetafields = await shopify.api.rest.Metafield.all({
+    //   //   session: session[1],
+    //   //   metafield: { "owner_id": ownerId, "owner_resource": ownerResource },
+    //   // });
+    //   const productMetafields = await shopify.api.rest.Metafield.all({
+    //     session: session[1],
+    //     metafield: { owner_id: productId, owner_resource: "product" },
+    //   });
+    //   console.log("element==", element);
+    //   const metaData = productMetafields.data;
 
-      isFreeShipping = getValueByKey(metaData, "is_free_shipping") == "1" ? true : false;
+    //   isFreeShipping =
+    //     getValueByKey(metaData, "is_free_shipping") == "1" ? true : false;
 
-      if (isFreeShipping) {
-        const freeResponse = {
-          "rates": [
-            {
-              "service_name": `Fast Courier`,
-              "service_code": `FC`,
-              "total_price": "0000",
-              "description": "Free Shipping",
-              "currency": "AUD",
-            },
-          ]
-        };
-        res.status(200).json(freeResponse);
-      }
+    //   if (isFreeShipping) {
+    //     const freeResponse = {
+    //       rates: [
+    //         {
+    //           service_name: `Fast Courier`,
+    //           service_code: `FC`,
+    //           total_price: "0000",
+    //           description: "Free Shipping",
+    //           currency: "AUD",
+    //         },
+    //       ],
+    //     };
+    //     res.status(200).json(freeResponse);
+    //   }
 
-      var item = {
-        "type": getValueByKey(metaData, "package_type"),
-        "height": getValueByKey(metaData, "height"),
-        "length": getValueByKey(metaData, "length"),
-        "width": getValueByKey(metaData, "width"),
-        "weight": getValueByKey(metaData, "weight"),
-        "quantity": element.quantity,
-      }
+    //   var item = {
+    //     type: getValueByKey(metaData, "package_type"),
+    //     height: getValueByKey(metaData, "height"),
+    //     length: getValueByKey(metaData, "length"),
+    //     width: getValueByKey(metaData, "width"),
+    //     weight: getValueByKey(metaData, "weight"),
+    //     quantity: element.quantity,
+    //   };
 
-      console.log("item===", item);
-      const itemPrice = parseInt(element.price) / 100;
-      totalPrice += itemPrice;
+    //   console.log("item===", item);
+    //   const itemPrice = parseInt(element.price) / 100;
+    //   totalPrice += itemPrice;
 
-      if (!isFreeShipping) {
-        items.push(item);
-      }
-      // })
+    //   if (!isFreeShipping) {
+    //     items.push(item);
+    //   }
+    //   // })
+    // }
 
-    }
+    // console.log("items===", items);
 
-    console.log("items===", items);
+    // const db = await getConnection();
+    // let collection = db.collection("merchant_details");
+    // const merchant = await collection.find({}).toArray();
 
-    const db = await getConnection();
-    let collection = db.collection("merchant_details");
-    const merchant = await collection.find({}).toArray();
+    // console.log("total===", totalPrice);
+    // const headers = {
+    //   Accept: "application/json",
+    //   "Content-Type": "application/json",
+    //   "request-type": "shopify_development",
+    //   version: "3.1.1",
+    //   Authorization: "Bearer " + merchant[0]?.access_token,
+    // };
+    // console.log("destination===", _req?.body?.rate?.destination);
+    // const destination = _req?.body?.rate?.destination;
 
-    console.log("total===", totalPrice);
-    const headers = {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-      "request-type": "shopify_development",
-      "version": "3.1.1",
-      "Authorization": "Bearer " + merchant[0]?.access_token
-    }
-    console.log("destination===", _req?.body?.rate?.destination);
-    const destination = _req?.body?.rate?.destination;
+    // const pickupLocations = await fetch(
+    //   `https://fctest-api.fastcourier.com.au/api/wp/merchant_domain/locations/${merchant[0]?.id}`,
+    //   {
+    //     method: "GET",
+    //     credentials: "include",
+    //     headers: headers,
+    //   }
+    // );
 
-    const pickupLocations = await fetch(
-      `https://fctest-api.fastcourier.com.au/api/wp/merchant_domain/locations/${merchant[0]?.id}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: headers
-      },
-    );
+    // const locations = await pickupLocations.json();
 
-    const locations = await pickupLocations.json();
+    // const pickupLocation = locations?.data?.find(
+    //   (element) => element.is_default == 1
+    // );
 
-    const pickupLocation = locations?.data?.find(element => element.is_default == 1);
+    // const payload = {
+    //   request_type: "wp",
+    //   pickupFirstName: pickupLocation?.first_name,
+    //   pickupLastName: pickupLocation?.last_name,
+    //   pickupCompanyName: "",
+    //   pickupEmail: pickupLocation?.email,
+    //   pickupAddress1: pickupLocation?.address1,
+    //   pickupAddress2: pickupLocation?.address2,
+    //   pickupPhone: pickupLocation?.phone,
+    //   pickupSuburb: pickupLocation?.suburb,
+    //   pickupState: pickupLocation?.state,
+    //   pickupPostcode: pickupLocation?.postcode,
+    //   pickupBuildingType: pickupLocation?.building_type,
+    //   pickupTimeWindow: `${pickupLocation?.time_window}`,
+    //   isPickupTailLift: `${pickupLocation?.tail_lift}`,
+    //   destinationSuburb: destination.city,
+    //   destinationState: destination.province,
+    //   destinationPostcode: destination.postal_code,
+    //   destinationBuildingType: destination.company
+    //     ? "commercial"
+    //     : "residential",
+    //   destinationFirstName: destination.name,
+    //   destinationLastName: "",
+    //   destinationCompanyName: "NA",
+    //   destinationEmail: destination.email,
+    //   destinationAddress1: destination.address1,
+    //   destinationAddress2:
+    //     destination.address2 != null ? destination.address2 : "",
+    //   destinationPhone: destination.phone,
+    //   parcelContent: "Order from Main Hub",
+    //   valueOfContent: `${totalPrice}`,
+    //   items: JSON.stringify(items),
+    //   isDropOffTailLift: merchant[0]?.is_drop_off_tail_lift,
+    // };
 
-    const payload = {
-      "request_type": "wp",
-      "pickupFirstName": pickupLocation?.first_name,
-      "pickupLastName": pickupLocation?.last_name,
-      "pickupCompanyName": "",
-      "pickupEmail": pickupLocation?.email,
-      "pickupAddress1": pickupLocation?.address1,
-      "pickupAddress2": pickupLocation?.address2,
-      "pickupPhone": pickupLocation?.phone,
-      "pickupSuburb": pickupLocation?.suburb,
-      "pickupState": pickupLocation?.state,
-      "pickupPostcode": pickupLocation?.postcode,
-      "pickupBuildingType": pickupLocation?.building_type,
-      "pickupTimeWindow": `${pickupLocation?.time_window}`,
-      "isPickupTailLift": `${pickupLocation?.tail_lift}`,
-      "destinationSuburb": destination.city,
-      "destinationState": destination.province,
-      "destinationPostcode": destination.postal_code,
-      "destinationBuildingType": destination.company ? "commercial" : "residential",
-      "destinationFirstName": destination.name,
-      "destinationLastName": "",
-      "destinationCompanyName": "NA",
-      "destinationEmail": destination.email,
-      "destinationAddress1": destination.address1,
-      "destinationAddress2": destination.address2 != null ? destination.address2 : "",
-      "destinationPhone": destination.phone,
-      "parcelContent": "Order from Main Hub",
-      "valueOfContent": `${totalPrice}`,
-      "items": JSON.stringify(items),
-      "isDropOffTailLift": merchant[0]?.is_drop_off_tail_lift
-    }
+    // console.log("payload===", payload);
 
-    console.log("payload===", payload);
+    // const quote = await fetch(
+    //   `https://fctest-api.fastcourier.com.au/api/wp/quote?${new URLSearchParams(
+    //     payload
+    //   )}`,
+    //   {
+    //     method: "GET",
+    //     credentials: "include",
+    //     headers: headers,
+    //   }
+    // );
 
-    const quote = await fetch(
-      `https://fctest-api.fastcourier.com.au/api/wp/quote?${new URLSearchParams(payload)}`,
-      {
-        method: "GET",
-        credentials: "include",
-        headers: headers
-      },
-    );
+    // const data = await quote.json();
 
-    const data = await quote.json();
+    // console.log("quote===", data);
 
-    console.log("quote===", data);
+    // var amount = "";
+    // var description = "";
+    // var eta = "";
+    // var serviceCode = "";
 
-    var amount = "";
-    var description = "";
-    var eta = "";
-    var serviceCode = "";
-
-    if (data?.message == "No quote found") {
-      amount = `${merchant[0]?.fallback_amount}00`;
-      description = "Default fallback amount";
-      serviceCode = "FC";
-    } else {
-      amount = `${data?.data?.priceIncludingGst}`;
-      description = "Includes tracking and insurance";
-      eta = `${data?.data?.eta}`;
-      serviceCode = `"${data?.data?.id}","${data?.data?.orderHashId}"`
-    }
-
-    const response = {
-      "rates": [
-        {
-          "service_name": `Fast Courier [${data?.data?.courierName}]`,
-          "service_code": `${serviceCode}`,
-          "total_price": amount,
-          "description": description,
-          "currency": "AUD",
-        },
-      ]
-    };
-
+    // if (data?.message == "No quote found") {
+    //   amount = `${merchant[0]?.fallback_amount}00`;
+    //   description = "Default fallback amount";
+    //   serviceCode = "FC";
+    // } else {
+    //   amount = `${data?.data?.priceIncludingGst}`;
+    //   description = "Includes tracking and insurance";
+    //   eta = `${data?.data?.eta}`;
+    //   serviceCode = `"${data?.data?.id}","${data?.data?.orderHashId}"`;
+    // }
 
     // const response = {
-    //   "rates": [
+    //   rates: [
     //     {
-    //       "service_name": "Fast Courier [Courier Please]",
-    //       "service_code": `"WVQXMGNYEO","GROREYQJYM"`,
-    //       "total_price": "8500",
-    //       "description": "Includes tracking and insurance",
-    //       "currency": "AUD",
-    //       "max_delivery_date": "3 working days"
+    //       service_name: `Fast Courier [${data?.data?.courierName}]`,
+    //       service_code: `${serviceCode}`,
+    //       total_price: amount,
+    //       description: description,
+    //       currency: "AUD",
     //     },
-    //   ]
+    //   ],
     // };
+
+    const response = {
+      rates: [
+        {
+          service_name: "Fast Courier [Courier Please]",
+          service_code: `"WVQXMGNYEO","GROREYQJYM"`,
+          total_price: "8500",
+          description: "Includes tracking and insurance",
+          currency: "AUD",
+          max_delivery_date: "3 working days",
+        },
+      ],
+    };
 
     console.log("response===", response);
 
     res.status(200).json(response);
   } catch (error) {
-    console.log("shipping-rates==", error)
+    console.log("shipping-rates==", error);
   }
-
 });
 
 // Set up Shopify authentication and webhook handling
@@ -266,7 +272,6 @@ app.use("/api/*", shopify.validateAuthenticatedSession());
 
 app.use(express.json());
 
-
 app.get("/api/get-merchant", async (_req, res) => {
   try {
     const db = await getConnection();
@@ -276,7 +281,6 @@ app.get("/api/get-merchant", async (_req, res) => {
   } catch (error) {
     console.log("get-merchant=", error);
   }
-
 });
 
 app.post("/api/save-merchant", async (_req, res) => {
@@ -289,7 +293,6 @@ app.post("/api/save-merchant", async (_req, res) => {
   } catch (error) {
     console.log("save-merchant=", error);
   }
-
 });
 
 app.post("/api/shipping-box/create", async (_req, res) => {
@@ -302,7 +305,6 @@ app.post("/api/shipping-box/create", async (_req, res) => {
   } catch (error) {
     console.log("shipping-box/create=", error);
   }
-
 });
 
 app.delete("/api/shipping-box/delete", async (_req, res) => {
@@ -315,7 +317,6 @@ app.delete("/api/shipping-box/delete", async (_req, res) => {
   } catch (error) {
     console.log("shipping-box/delete=", error);
   }
-
 });
 
 app.get("/api/shipping-boxes", async (_req, res) => {
@@ -327,7 +328,6 @@ app.get("/api/shipping-boxes", async (_req, res) => {
   } catch (error) {
     console.log("shipping-box=", error);
   }
-
 });
 
 app.get("/api/get-token", async (_req, res) => {
@@ -339,7 +339,6 @@ app.get("/api/get-token", async (_req, res) => {
   } catch (error) {
     console.log("get-token=", error);
   }
-
 });
 
 app.post("/api/product/add-dimensions", async (_req, res) => {
@@ -352,7 +351,7 @@ app.post("/api/product/add-dimensions", async (_req, res) => {
       weight,
       isIndividual,
       product_ids,
-      variant_ids
+      variant_ids,
     } = _req.body;
     const session = res.locals.shopify.session;
     var products = [];
@@ -450,14 +449,12 @@ app.post("/api/product/add-dimensions", async (_req, res) => {
         await variant.save({
           update: true,
         });
-
       });
     }
     res.status(200).send(products);
   } catch (error) {
     console.log("add-dimensions==", error);
   }
-
 });
 
 app.post("/api/product/add-location", async (_req, res) => {
@@ -505,9 +502,7 @@ app.post("/api/product/add-location", async (_req, res) => {
   } catch (error) {
     console.log("add-location==", error);
   }
-
 });
-
 
 app.post("/api/free-shipping", async (_req, res) => {
   try {
@@ -535,9 +530,7 @@ app.post("/api/free-shipping", async (_req, res) => {
   } catch (error) {
     console.log("free-shipping=", error);
   }
-
 });
-
 
 app.get("/api/carrier-services", async (_req, res) => {
   try {
@@ -548,14 +541,16 @@ app.get("/api/carrier-services", async (_req, res) => {
   } catch (error) {
     console.log("carrier-services=", error);
   }
-
 });
 
 app.post("/api/carrier-service/create", async (_req, res) => {
   try {
-    const carrier_service = new shopify.api.rest.CarrierService({ session: res.locals.shopify.session });
+    const carrier_service = new shopify.api.rest.CarrierService({
+      session: res.locals.shopify.session,
+    });
     carrier_service.name = "Fast Courier";
-    carrier_service.callback_url = "https://fc-app.vuwork.com/api/shipping-rates";
+    carrier_service.callback_url =
+      "https://price-enrolled-cable-failures.trycloudflare.com/api/shipping-rates";
     carrier_service.service_discovery = true;
     await carrier_service.save({
       update: true,
@@ -564,15 +559,17 @@ app.post("/api/carrier-service/create", async (_req, res) => {
   } catch (error) {
     console.log("carrier-create=", error);
   }
-
 });
 
 app.post("/api/carrier-service/update", async (_req, res) => {
   try {
-    const carrier_service = new shopify.api.rest.CarrierService({ session: res.locals.shopify.session });
-    carrier_service.id = 66713190619;
+    const carrier_service = new shopify.api.rest.CarrierService({
+      session: res.locals.shopify.session,
+    });
+    carrier_service.id = 67948871899;
     carrier_service.name = "Fast Courier";
-    carrier_service.callback_url = "https://sodium-maintaining-anthropology-sony.trycloudflare.com/api/shipping-rates";
+    carrier_service.callback_url =
+      "https://price-enrolled-cable-failures.trycloudflare.com/api/shipping-rates";
     await carrier_service.save({
       update: true,
     });
@@ -580,9 +577,18 @@ app.post("/api/carrier-service/update", async (_req, res) => {
   } catch (error) {
     console.log("carrier-update=", error);
   }
-
 });
 
+app.post("/api/carrier-service/delete", async (_req, res) => {
+  try {
+    await shopify.api.rest.CarrierService.delete({
+      session: res.locals.shopify.session,
+      id: 67948871899,
+    });
+  } catch (error) {
+    console.log("carrier-delete=", error);
+  }
+});
 
 app.get("/api/orders", async (_req, res) => {
   try {
@@ -625,7 +631,6 @@ app.get("/api/order-metafields", async (_req, res) => {
   } catch (error) {
     console.log("order-metafields=", error);
   }
-
 });
 
 app.post("/api/hold-orders", async (_req, res) => {
@@ -659,9 +664,9 @@ app.post("/api/book-orders", async (_req, res) => {
   try {
     const { orderIds, collectionDate } = _req.body;
     const session = res.locals.shopify.session;
-    console.log("ress===", res)
-    console.log("locals===", res.locals)
-    console.log("shopify===", res.locals.shopify)
+    console.log("ress===", res);
+    console.log("locals===", res.locals);
+    console.log("shopify===", res.locals.shopify);
     var orders = [];
     orderIds.forEach(async (id) => {
       // const fulfillment_order = new shopify.api.rest.FulfillmentOrder({ session: session });
@@ -683,7 +688,7 @@ app.post("/api/book-orders", async (_req, res) => {
           value: collectionDate,
           type: "single_line_text_field",
           namespace: "Order",
-        }
+        },
       ];
       await order.save({
         update: true,
@@ -693,7 +698,7 @@ app.post("/api/book-orders", async (_req, res) => {
     });
     res.status(200).send(orders);
   } catch (error) {
-    console.log("book-orders=", error)
+    console.log("book-orders=", error);
   }
 });
 
@@ -749,7 +754,9 @@ app.get("/api/products", async (_req, res) => {
 app.post("/api/set-order-metafields", async (_req, res) => {
   try {
     const { quoteId, orderHashId, orderId, carrierName } = _req.body;
-    const order = new shopify.api.rest.Order({ session: res.locals.shopify.session });
+    const order = new shopify.api.rest.Order({
+      session: res.locals.shopify.session,
+    });
     order.id = parseInt(orderId);
     order.metafields = [
       {
@@ -778,13 +785,14 @@ app.post("/api/set-order-metafields", async (_req, res) => {
   } catch (error) {
     console.log("set-order-metafields=", error);
   }
-
 });
 
 app.get("/api/process-order/:orderId", async (_req, res) => {
   try {
     const orderId = _req.params.orderId;
-    const order = new shopify.api.rest.Order({ session: res.locals.shopify.session });
+    const order = new shopify.api.rest.Order({
+      session: res.locals.shopify.session,
+    });
     order.id = parseInt(orderId);
     order.metafields = [
       {
@@ -801,7 +809,6 @@ app.get("/api/process-order/:orderId", async (_req, res) => {
   } catch (error) {
     console.log("process-order=", error);
   }
-
 });
 
 app.get("/api/get-order/:orderId", async (_req, res) => {
@@ -809,13 +816,12 @@ app.get("/api/get-order/:orderId", async (_req, res) => {
     const orderId = _req.params.orderId;
     const order = await shopify.api.rest.Order.find({
       session: res.locals.shopify.session,
-      id: parseInt(orderId)
+      id: parseInt(orderId),
     });
     res.status(200).send(order);
   } catch (error) {
     console.log("get-order=", error);
   }
-
 });
 
 app.get("/api/get-checkout/:checkoutToken", async (_req, res) => {
@@ -829,7 +835,6 @@ app.get("/api/get-checkout/:checkoutToken", async (_req, res) => {
   } catch (error) {
     console.log("get-checkout=", error);
   }
-
 });
 
 app.post("/api/carrier-service/delete", async (_req, res) => {
@@ -841,7 +846,6 @@ app.post("/api/carrier-service/delete", async (_req, res) => {
   } catch (error) {
     console.log("carrier-delete=", error);
   }
-
 });
 
 app.use(shopify.cspHeaders());

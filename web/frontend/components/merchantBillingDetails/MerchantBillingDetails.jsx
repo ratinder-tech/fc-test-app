@@ -56,8 +56,8 @@ export function MerchantBillingDetails(props) {
     categoryOfGoodsError: "",
   });
 
- async function validations() {
-    let count_of_errros=0
+  async function validations() {
+    let count_of_errros = 0;
     let _errors = {
       billingFirstNameError: null,
       billingLastNameError: null,
@@ -71,92 +71,63 @@ export function MerchantBillingDetails(props) {
       fallbackAmountError: null,
       courierPreferencesError: null,
       categoryOfGoodsError: null,
-    }
+    };
     if (!billingFirstName) {
-      count_of_errros++
+      count_of_errros++;
       _errors.billingFirstNameError = "Please enter first name.";
       // setErrorMessage("Please enter first name.");
-     
     }
     if (!billingLastName) {
-     
-      count_of_errros++
+      count_of_errros++;
       _errors.billingLastNameError = "Please enter last name.";
-    
     }
     if (!billingCompanyName) {
-  
-      count_of_errros++
+      count_of_errros++;
       _errors.billingCompanyNameError = "Please enter company name.";
     }
     if (!billingPhone) {
-   
-      count_of_errros++
+      count_of_errros++;
       _errors.billingPhoneError = "Please enter phone.";
     }
     if (!billingEmail) {
-     
-      count_of_errros++
+      count_of_errros++;
       _errors.billingEmailError = "Please enter email.";
     }
     if (!billingAddress1) {
-     
-      count_of_errros++
+      count_of_errros++;
       _errors.billingAddress1Error = "Please enter address1.";
     }
     if (!billingSuburb) {
-                   
-      count_of_errros++
-      _errors.billingSuburbError = "Please enter suburb.";                           
-
+      count_of_errros++;
+      _errors.billingSuburbError = "Please enter suburb.";
     }
-    if(!bookingPreference){
-
-      count_of_errros++
+    if (!bookingPreference) {
+      count_of_errros++;
       _errors.bookingPreferenceError = "Please select booking preference.";
     }
-    if(!fallbackAmount){
-      count_of_errros++
+    if (!fallbackAmount) {
+      count_of_errros++;
       _errors.fallbackAmountError = "Please enter fallback amount.";
     }
-    if(selectedCourierPref?.length == 0 || selectedCourierPref === null){
-      count_of_errros++
+    if (selectedCourierPref?.length == 0 || selectedCourierPref === null) {
+      count_of_errros++;
       _errors.courierPreferencesError = "Please select courier preferences.";
     }
 
-    if(!billingAbn){
-      count_of_errros++
+    if (!billingAbn) {
+      count_of_errros++;
       _errors.billingAbnError = "Please enter ABN.";
     }
 
- 
     if (selectedGoods?.length == 0 || selectedGoods === null) {
-      count_of_errros++
+      count_of_errros++;
       _errors.categoryOfGoodsError = "Please select category of goods.";
     }
     setErrors(_errors);
     return count_of_errros;
   }
 
-  // console.log(errors,"errods")
-  console.log(selectedCourierPref,"selectedCourierPref")
-
   const fetch = useAuthenticatedFetch();
-
-  // const categoryOfGoods = [
-  //     {
-  //         "value": "alcohal", "label": "alcohal"
-  //     },
-  //     {
-  //         "value": "food", "label": "food"
-  //     },
-  //     {
-  //         "value": "furniture", "label": "furniture"
-  //     },
-  //     {
-  //         "value": "plants", "label": "plants"
-  //     }
-  // ]
 
   const getMerchantDetails = (categories) => {
     setIsLoading(true);
@@ -173,6 +144,15 @@ export function MerchantBillingDetails(props) {
         headers: headers,
       })
       .then((response) => {
+        console.log(
+          "suburbs==",
+          response.data.data.billing_suburb +
+            ", " +
+            response.data.data.billing_postcode +
+            " (" +
+            response.data.data.billing_state +
+            ")"
+        );
         if (response.data.data.billing_suburb) {
           setDefaultSuburb({
             value:
@@ -194,6 +174,9 @@ export function MerchantBillingDetails(props) {
 
         // Set default selected goods
         let selected_value = JSON.parse(response.data.data.categories_of_goods);
+
+        console.log("selected_value=", selected_value);
+        console.log("categories==", categories);
 
         setSelectedGoods(
           categories.filter((item) => selected_value?.includes(item.value))
@@ -295,10 +278,9 @@ export function MerchantBillingDetails(props) {
     setConditionalValue(merchant.conditional_price);
     setInsuranceAmount(merchant.insurance_amount);
     setIsDropOffTailLift(merchant.is_drop_off_tail_lift);
-    if(merchant.courier_preferences){
+    if (merchant.courier_preferences) {
       const carriers = JSON.parse(merchant.courier_preferences);
       setSelectedCourierPref(carriers);
-
     }
     const tailLiftWeight = localStorage.getItem("tailLiftValue");
     setTailLiftValue(tailLiftWeight);
@@ -368,7 +350,7 @@ export function MerchantBillingDetails(props) {
 
   const activateMerchant = async () => {
     try {
-      const isValid =await validations();
+      const isValid = await validations();
       if (isValid === 0) {
         setIsLoading(true);
         const accessToken = localStorage.getItem("accessToken");
@@ -422,6 +404,7 @@ export function MerchantBillingDetails(props) {
             localStorage.setItem("tailLiftValue", tailLiftValue);
             const carrierService = getCarrierSerice(carrierServices);
             if (carrierService == null) {
+              console.log("create carrier");
               createCarrierService();
             }
             setIsLoading(false);
@@ -651,19 +634,19 @@ export function MerchantBillingDetails(props) {
               <span style={{ color: "red" }}> &nbsp; {"(Required)"}</span>
             )}
           </div>
-          {/* {defaultSuburb != null && ( */}
-          <Select
-            options={suburbs}
-            onChange={(e) => {
-              const [, extractedCity, extractedPostcode, extractedState] =
-                e.value.match(/^(.*), (\d+) \((.*)\)$/);
-              setBillingSuburb(extractedCity);
-              setBillingPostcode(extractedPostcode);
-              setBillingState(extractedState);
-            }}
-            defaultValue={defaultSuburb}
-          />
-          {/* )} */}
+          {defaultSuburb != null && (
+            <Select
+              options={suburbs}
+              onChange={(e) => {
+                const [, extractedCity, extractedPostcode, extractedState] =
+                  e.value.match(/^(.*), (\d+) \((.*)\)$/);
+                setBillingSuburb(extractedCity);
+                setBillingPostcode(extractedPostcode);
+                setBillingState(extractedState);
+              }}
+              defaultValue={defaultSuburb}
+            />
+          )}
         </div>
       </div>
       <div className="shipping-config">
@@ -790,9 +773,9 @@ export function MerchantBillingDetails(props) {
             )}
           </div>
 
-          {categoryOfGoods.length > 0 &&  (
+          {categoryOfGoods.length > 0 && (
             <Select
-              defaultValue={selectedGoods ?? []}
+              defaultValue={selectedGoods}
               isMulti
               name="colors"
               options={categoryOfGoods}
@@ -914,7 +897,7 @@ export function MerchantBillingDetails(props) {
               type="type"
               name="tailLiftValue"
               className="input-field-text1"
-              value={30}
+              value={tailLiftValue === null ? 30 : tailLiftValue}
               onChange={(e) => setTailLiftValue(e.target.value)}
             />{" "}
             {" Kgs."}

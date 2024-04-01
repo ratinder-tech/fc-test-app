@@ -467,7 +467,7 @@ export function NewOrders(props) {
             />
           </div>
         </div>
-        <div className="input-container">
+        {/* <div className="input-container">
           <div className="input-lebel">
             <span> Order Shipping Type&nbsp;</span>
           </div>
@@ -479,7 +479,7 @@ export function NewOrders(props) {
               <option value="partially-free">Partially Free</option>
             </select>
           </div>
-        </div>
+        </div> */}
         <div className="d-flex align-items-end  ">
           <button
             className="fc-yellow-btn pointer"
@@ -619,26 +619,14 @@ export function NewOrders(props) {
                     </td>
                     <td width="10%">{getFormattedDate(element.created_at)}</td>
                     <td width="15%">
-                      {element?.shipping_address != null
-                        ? element?.shipping_address?.first_name +
-                          " " +
-                          element?.shipping_address?.last_name
-                        : element?.billing_address?.first_name +
-                          " " +
-                          element?.billing_address?.last_name}
+                      {element?.billing_address?.first_name +
+                        " " +
+                        element?.billing_address?.last_name}
                     </td>
                     <td width="15%">
-                      {element?.shipping_address != null
-                        ? element?.shipping_address?.address1 +
-                          ", " +
-                          element?.shipping_address?.address2 +
-                          " " +
-                          element?.shipping_address?.city
-                        : element?.billing_address?.address1 +
-                          ", " +
-                          element?.billing_address?.address2 +
-                          " " +
-                          element?.billing_address?.city}
+                      {element?.billing_address?.address1 +
+                        ", " +
+                        element?.billing_address?.city}
                     </td>
                     <td width="8%">{element.financial_status}</td>
                     <td width={"8%"}>{element.current_total_price}</td>
@@ -652,7 +640,7 @@ export function NewOrders(props) {
                       )}
                     </td>
                     <td width="10%">{element.financial_status}</td>
-                    <td width="8%" style={{textAlign: "center"}}>
+                    <td width="8%" style={{ textAlign: "center" }}>
                       <FontAwesomeIcon
                         icon="fa-solid fa-pen-to-square"
                         size="2xs"

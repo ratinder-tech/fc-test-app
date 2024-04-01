@@ -3,7 +3,7 @@
 client_id = "f9c27e3e9a9f6b33b4f1a31fc764c385"
 name = "fc-test-app"
 handle = "fc-test-app"
-application_url = "https://bills-is-paperbacks-pics.trycloudflare.com"
+application_url = "https://hash-anniversary-vbulletin-agriculture.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_all_orders,read_checkouts,read_orders,read_products,read_shipping
 
 [auth]
 redirect_urls = [
-  "https://bills-is-paperbacks-pics.trycloudflare.com/auth/callback",
-  "https://bills-is-paperbacks-pics.trycloudflare.com/auth/shopify/callback",
-  "https://bills-is-paperbacks-pics.trycloudflare.com/api/auth/callback"
+  "https://hash-anniversary-vbulletin-agriculture.trycloudflare.com/auth/callback",
+  "https://hash-anniversary-vbulletin-agriculture.trycloudflare.com/auth/shopify/callback",
+  "https://hash-anniversary-vbulletin-agriculture.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

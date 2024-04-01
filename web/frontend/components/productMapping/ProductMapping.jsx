@@ -231,6 +231,7 @@ export function ProductMapping() {
         getAllProducts();
         setIsLoading(false);
         setShowImportDimensionsModal(false);
+        setErrorMessage("");
       },
     });
   };
